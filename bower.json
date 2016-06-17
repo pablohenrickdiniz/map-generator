@@ -17,6 +17,6 @@
   ],
   "dependencies": {
     "noisejs": "https://github.com/josephg/noisejs.git",
-    "Javascript-Canvas-Terrain-Generator": "https://github.com/loktar00/Javascript-Canvas-Terrain-Generator.git"
+    "rpg-engine": "git@github.com:pablohenrickdiniz/rpg-engine.git"
   }
 }
