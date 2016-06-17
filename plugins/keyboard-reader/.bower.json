@@ -1,0 +1,28 @@
+{
+  "name": "keyboard-reader",
+  "authors": [
+    "Pablo Henrick <phydokz@hotmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "https://github.com/pablohenrickdiniz/keyboard-reader",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "584a932856",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "584a932856292bbc6d902382b4acc1ddc289b892"
+  },
+  "_source": "git@github.com:pablohenrickdiniz/keyboard-reader.git",
+  "_target": "*",
+  "_originalSource": "git@github.com:pablohenrickdiniz/keyboard-reader.git"
+}

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt_BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste de gerador</title>
+    <script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
+    <script type="text/javascript" src="../plugins/app-object/app-object.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/CanvasLayer.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/Validator.js"></script>
+    <script type="text/javascript" src="../plugins/keyboard-reader/src/keyboard-reader.js"></script>
+    <script type="text/javascript" src="../plugins/mouse-reader/src/mouse-reader.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/Color.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/CanvasEngineCore.js"></script>
+    <script type="text/javascript" src="../plugins/noisejs/perlin.js"></script>
+    <script type="text/javascript" src="../src/map-generator.js"></script>
+    <script type="text/javascript">
+        const WATER_1 = '#000080';
+        const WATER_2 = '#0000cc';
+        const WATER_3 = '#3333ff';
+        const WATER_4 = '#6666ff';
+        const SAND = 'yellow';
+        const GRASS = 'ForestGreen';
+        const FOREST = 'green';
+        const MOUNTAIN = '#cccccc';
+        const SNOW = 'white';
+
+        function init(){
+            var container = document.getElementById('container');
+            var engine = CE.create({
+                container:container,
+                width:200,
+                height:200
+            });
+
+            var layer = engine.createLayer({
+                width:200,
+                height:200
+            });
+            var context = layer.getContext();
+
+            MapGenerator.seed(0);
+            MapGenerator.setPortion(WATER_1,0,0.1);
+            MapGenerator.setPortion(WATER_2,0.1,0.15);
+            MapGenerator.setPortion(WATER_3,0.15,0.2);
+            MapGenerator.setPortion(WATER_4,0.2,0.3);
+            MapGenerator.setPortion(SAND,0.3,0.35);
+            MapGenerator.setPortion(GRASS,0.35,0.5);
+            MapGenerator.setPortion(FOREST,0.5,0.8);
+            MapGenerator.setPortion(MOUNTAIN,0.8,0.9);
+            MapGenerator.setPortion(SNOW,0.9);
+
+            var height_map_b = MapGenerator.generate2d(0,0,200,200);
+            draw_map(context,0,0,height_map_b);
+        }
+
+        function draw_map(context,sx,sy,height_map) {
+            for (var x = 0; x < height_map.length; x++) {
+                for (var y = 0; y < height_map[x].length; y++) {
+                    var portion = height_map[x][y];
+                    switch(portion.type){
+                        case WATER_1:
+                            context.fillStyle = WATER_1;
+                            break;
+                        case WATER_2:
+                            context.fillStyle = WATER_2;
+                            break;
+                        case WATER_3:
+                            context.fillStyle = WATER_3;
+                            break;
+                        case WATER_4:
+                            context.fillStyle = WATER_4;
+                            break;
+                        case SAND:
+                            context.fillStyle = SAND;
+                            break;
+                        case FOREST:
+                            context.fillStyle = FOREST;
+                            break;
+                        case GRASS:
+                            context.fillStyle = GRASS;
+                            break;
+                        case MOUNTAIN:
+                            context.fillStyle = MOUNTAIN;
+                            break;
+                        case SNOW:
+                            context.fillStyle = SNOW;
+                            break;
+                        default:
+                    }
+                    context.fillRect(sx + x, sy + y, 1, 1);
+
+                }
+            }
+        }
+    </script>
+</head>
+<body onload="init()">
+<div id="container">
+
+</div>
+</body>
+</html>

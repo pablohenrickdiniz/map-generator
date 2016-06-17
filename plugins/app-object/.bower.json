@@ -1,0 +1,28 @@
+{
+  "name": "app-object",
+  "main": "app-object.js",
+  "authors": [
+    "Pablo Henrick <phydokz@hotmail.com>"
+  ],
+  "description": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "https://github.com/pablohenrickdiniz/app-object",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "a00073a746",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "a00073a746afb76d53aaa351fef018f8c2ea8792"
+  },
+  "_source": "git@github.com:pablohenrickdiniz/app-object.git",
+  "_target": "*",
+  "_originalSource": "git@github.com:pablohenrickdiniz/app-object.git"
+}

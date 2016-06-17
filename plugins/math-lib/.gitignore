@@ -1,0 +1,15 @@
+
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+.module-cache
+bower_components
+node_modules
+*.min.min.js
+*.min.min.css
+build

@@ -1,0 +1,11 @@
+{
+  "name": "math-lib",
+  "homepage": "https://github.com/pablohenrickdiniz/math-lib",
+  "authors": [
+    "Pablo Henrick <phydokz@hotmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT"
+}
