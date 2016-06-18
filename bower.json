@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "noisejs": "https://github.com/josephg/noisejs.git",
-    "rpg-engine": "git@github.com:pablohenrickdiniz/rpg-engine.git"
+    "rpg-engine": "git@github.com:pablohenrickdiniz/rpg-engine.git",
+    "isomer": "^0.2.6"
   }
 }
