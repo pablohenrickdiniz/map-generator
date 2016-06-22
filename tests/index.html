@@ -76,7 +76,13 @@
 
         function is_center(map,i,j){
             var similiar = map.getData(i,j).similiar;
-            return similiar[TOP] && similiar[BOTTOM] && similiar[LEFT] &&  similiar[RIGHT];
+            for(var i =0; i <= 7;i++){
+                if(!similiar[i]){
+                    return false;
+                }
+            }
+            return true;
+//            return similiar[TOP] && similiar[BOTTOM] && similiar[LEFT] &&  similiar[RIGHT];
         }
 
         function is_left(map,i,j){
@@ -116,12 +122,12 @@
 
         function is_open_horizontal(map,i,j){
             var similiar = map.getData(i,j).similiar;
-            return  similiar[RIGHT] && similiar[LEFT] && !similiar[BOTTOM] && !similiar[TOP];
+            return  !similiar[BOTTOM] && !similiar[TOP];
         }
 
         function is_open_vertical(map,i,j){
             var similiar = map.getData(i,j).similiar;
-            return  !similiar[RIGHT] && !similiar[LEFT] && similiar[BOTTOM] && similiar[TOP];
+            return  !similiar[RIGHT] && !similiar[LEFT];
         }
 
 
@@ -157,12 +163,12 @@
 
         function is_left_corner(map,i,j){
             var similiar = map.getData(i,j).similiar;
-            return  !similiar[TOP_RIGHT] && similiar[TOP_LEFT] && similiar[BOTTOM_LEFT] && !similiar[BOTTOM_RIGHT];
+            return  similiar[TOP_RIGHT] && !similiar[TOP_LEFT] && !similiar[BOTTOM_LEFT] && similiar[BOTTOM_RIGHT];
         }
 
         function is_right_corner(map,i,j){
             var similiar = map.getData(i,j).similiar;
-            return  similiar[TOP_RIGHT] && !similiar[TOP_LEFT] && !similiar[BOTTOM_LEFT] && similiar[BOTTOM_RIGHT];
+            return  !similiar[TOP_RIGHT] && similiar[TOP_LEFT] && similiar[BOTTOM_LEFT] && !similiar[BOTTOM_RIGHT];
         }
 
         function init(){
@@ -227,6 +233,8 @@
                 var water_bottom_left_corner = tileset_beach.get(5,7);
                 var water_top_left_corner = tileset_beach.get(6,7);
                 var water_top_corner = tileset_beach.get(7,4);
+                var water_right_corner = tileset_beach.get(8,3);
+                var water_left_corner = tileset_beach.get(8,4);
                 var water_bottom_corner = tileset_beach.get(7,5);
                 var water_closed = tileset_beach.get(7,1);
 
@@ -307,6 +315,12 @@
                                     }
                                     else if(is_bottom_corner(height_map,i,j)){
                                         map.setTile(i, j, k, water_bottom_corner);
+                                    }
+                                    else if(is_left_corner(height_map,i,j)){
+                                        map.setTile(i, j, k, water_left_corner);
+                                    }
+                                    else if(is_right_corner(height_map,i,j)){
+                                        map.setTile(i, j, k, water_right_corner);
                                     }
 
 
