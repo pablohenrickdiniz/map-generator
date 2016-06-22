@@ -15,9 +15,11 @@
     <script type="text/javascript" src="../plugins/quadtree/src/quad-tree.js"></script>
     <script type="text/javascript" src="../plugins/rpg-engine/src/Map.js"></script>
     <script type="text/javascript" src="../plugins/rpg-engine/src/ImageLoader.js"></script>
+    <script type="text/javascript" src="../plugins/rpg-engine/src/Tile.js"></script>
     <script type="text/javascript" src="../plugins/rpg-engine/src/Tileset.js"></script>
+    <script type="text/javascript" src="../plugins/rpg-engine/src/TilesetLoader.js"></script>
     <script type="text/javascript" src="../plugins/noisejs/perlin.js"></script>
-    <script type="text/javascript" src="../src/map-generator.js"></script>
+    <script type="text/javascript" src="../src/HeightMap.js"></script>
     <script type="text/javascript">
         const WATER_1 = '#000080';
         const WATER_2 = '#0000cc';
@@ -28,77 +30,302 @@
         const FOREST = 'green';
         const MOUNTAIN = '#cccccc';
         const SNOW = 'white';
+        const TOP = 0;
+        const TOP_RIGHT = 1;
+        const RIGHT = 2;
+        const BOTTOM_RIGHT = 3;
+        const BOTTOM = 4;
+        const BOTTOM_LEFT = 5;
+        const LEFT = 6;
+        const TOP_LEFT = 7;
+
+
+        function is_type(map,i,j,type){
+            return map.getData(i,j).type == type;
+        }
+
+        function is_top_left(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[LEFT] && !similiar[TOP] && similiar[RIGHT] && similiar[BOTTOM];
+        }
+
+        function is_top_right(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[RIGHT] && !similiar[TOP] && similiar[LEFT] && similiar[BOTTOM];
+        }
+
+        function is_bottom_left(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[LEFT] && !similiar[BOTTOM] && similiar[TOP] && similiar[RIGHT];
+        }
+
+        function is_bottom_right(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[RIGHT] && !similiar[BOTTOM] && similiar[TOP] && similiar[LEFT];
+        }
+
+        function is_top_center(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[TOP] && similiar[LEFT] && similiar[RIGHT]
+        }
+
+        function is_bottom_center(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[BOTTOM] && similiar[LEFT] && similiar[RIGHT]
+        }
+
+        function is_center(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return similiar[TOP] && similiar[BOTTOM] && similiar[LEFT] &&  similiar[RIGHT];
+        }
+
+        function is_left(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[LEFT] && similiar[RIGHT] && similiar[TOP] &&  similiar[BOTTOM];
+        }
+
+        function is_right(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[RIGHT] && similiar[LEFT] && similiar[TOP] &&  similiar[BOTTOM];
+        }
+
+        function is_open_top(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[RIGHT] && !similiar[LEFT]  && !similiar[BOTTOM] && similiar[TOP];
+        }
+
+        function is_open_right(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return similiar[RIGHT] && !similiar[LEFT] && !similiar[TOP] && !similiar[BOTTOM];
+        }
+
+        function is_open_bottom(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[RIGHT] && !similiar[LEFT] && !similiar[TOP] && similiar[BOTTOM];
+        }
+
+        function is_open_left(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[RIGHT] && similiar[LEFT] && !similiar[TOP] && !similiar[BOTTOM];
+        }
+
+        function is_closed(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return !similiar[RIGHT] && !similiar[LEFT] && !similiar[TOP] && !similiar[BOTTOM];
+        }
+
+        function is_open_horizontal(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return  similiar[RIGHT] && similiar[LEFT] && !similiar[BOTTOM] && !similiar[TOP];
+        }
+
+        function is_open_vertical(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return  !similiar[RIGHT] && !similiar[LEFT] && similiar[BOTTOM] && similiar[TOP];
+        }
+
+
+        function is_top_right_corner(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return  !similiar[TOP_RIGHT] && similiar[TOP_LEFT] && similiar[BOTTOM_LEFT] && similiar[BOTTOM_RIGHT];
+        }
+
+        function is_bottom_right_corner(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return  similiar[TOP_RIGHT] && similiar[TOP_LEFT] && similiar[BOTTOM_LEFT] && !similiar[BOTTOM_RIGHT];
+        }
+
+        function is_bottom_left_corner(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return  similiar[TOP_RIGHT] && similiar[TOP_LEFT] && !similiar[BOTTOM_LEFT] && similiar[BOTTOM_RIGHT];
+        }
+
+        function is_top_left_corner(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return  similiar[TOP_RIGHT] && !similiar[TOP_LEFT] && similiar[BOTTOM_LEFT] && similiar[BOTTOM_RIGHT];
+        }
+
+        function is_top_corner(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return  !similiar[TOP_RIGHT] && !similiar[TOP_LEFT] && similiar[BOTTOM_LEFT] && similiar[BOTTOM_RIGHT];
+        }
+
+        function is_bottom_corner(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return  similiar[TOP_RIGHT] && similiar[TOP_LEFT] && !similiar[BOTTOM_LEFT] && !similiar[BOTTOM_RIGHT];
+        }
+
+        function is_left_corner(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return  !similiar[TOP_RIGHT] && similiar[TOP_LEFT] && similiar[BOTTOM_LEFT] && !similiar[BOTTOM_RIGHT];
+        }
+
+        function is_right_corner(map,i,j){
+            var similiar = map.getData(i,j).similiar;
+            return  similiar[TOP_RIGHT] && !similiar[TOP_LEFT] && !similiar[BOTTOM_LEFT] && similiar[BOTTOM_RIGHT];
+        }
 
         function init(){
             var container = document.getElementById('container');
             var engine = CE.create({
                 container:container,
-                width:3200,
-                height:3200
+                width:6400,
+                height:6400
             },RPGCanvas);
 
-            var layer = engine.createLayer({
-                width:3200,
-                height:3200
-            });
-            var context = layer.getContext();
+            for(var i = 0; i < 10;i++){
+                engine.createLayer({
+                    width:6400,
+                    height:6400
+                });
+            }
 
-            MapGenerator.seed(0);
-            MapGenerator.setPortion(WATER_1,0,0.1);
-            MapGenerator.setPortion(WATER_2,0.1,0.15);
-            MapGenerator.setPortion(WATER_3,0.15,0.2);
-            MapGenerator.setPortion(WATER_4,0.2,0.3);
-            MapGenerator.setPortion(SAND,0.3,0.35);
-            MapGenerator.setPortion(GRASS,0.35,0.5);
-            MapGenerator.setPortion(FOREST,0.5,0.8);
-            MapGenerator.setPortion(MOUNTAIN,0.8,0.9);
-            MapGenerator.setPortion(SNOW,0.9);
-            var height_map = MapGenerator.generate2d(0,0,100,100);
+            var height_map = new HeightMap(0,0,200,200);
+            height_map.setSeed(0);
+//            MapGenerator.setPortion(WATER_1,0,0.1,0);
+//            MapGenerator.setPortion(WATER_2,0.1,0.15,0);
+//            MapGenerator.setPortion(WATER_3,0.15,0.2,0);
+            height_map.setPortion(WATER_4,0,0.3,0);
+            height_map.setPortion(SAND,0.3,0.35,1);
+            height_map.setPortion(GRASS,0.35,0.5,2);
+            height_map.setPortion(FOREST,0.5,0.8,3);
+            height_map.setPortion(MOUNTAIN,0.8,0.9,4);
+            height_map.setPortion(SNOW,0.9,5);
+            height_map.setScale(2000);
 
-            ImageLoader.loadAll(['tilesets/sea-&-beach.png','tilesets/snow.png','tilesets/Town & Village - 0034.png'],function(images){
+            console.log(height_map);
+
+            TilesetLoader.loadAll(['tilesets/beach_&_sea.png','tilesets/snow.png','tilesets/Town & Village - 0034.png'],function(tilesets){
                 var map = new Map({
-                    width:100,
-                    height:100
+                    width:200,
+                    height:200
                 });
 
-                var tileset_sea = new Tileset(images[0]);
-                var tileset_snow = new Tileset(images[1]);
-                var tileset_water = new Tileset(images[2]);
+                var tileset_beach = tilesets[0];
+                var tileset_snow = tilesets[1];
+                var tileset_water = tilesets[2];
 
-                var sand = tileset_sea.get(0,1);
-                var grass = tileset_sea.get(0,0);
-                var snow = tileset_snow.get(0,0);
-                var water = tileset_water.get(4,4);
 
-                sand.layer = 0;
-                grass.layer = 0;
-                snow.layer = 0;
-                water.layer = 0;
+                var water_center  = tileset_beach.get(5,4);
+                var sand_fill  = tileset_beach.get(4,6);
+                var water_top_right = tileset_beach.get(4,5);
+                var water_top_center = tileset_beach.get(4,4);
+                var water_top_left = tileset_beach.get(4,3);
+                var water_right = tileset_beach.get(5,5);
+                var water_left = tileset_beach.get(5,3);
+                var water_bottom_right = tileset_beach.get(6,5);
+                var water_bottom_center = tileset_beach.get(6,4);
+                var water_bottom_left = tileset_beach.get(6,3);
+                var water_open_bottom = tileset_beach.get(6,0);
+                var water_open_top = tileset_beach.get(7,0);
+                var water_open_right = tileset_beach.get(6,1);
+                var water_open_left = tileset_beach.get(6,2);
+                var water_open_horizontal = tileset_beach.get(7,2);
+                var water_open_vertical = tileset_beach.get(7,3);
+                var water_top_right_corner = tileset_beach.get(6,6);
+                var water_bottom_right_corner = tileset_beach.get(5,6);
+                var water_bottom_left_corner = tileset_beach.get(5,7);
+                var water_top_left_corner = tileset_beach.get(6,7);
+                var water_top_corner = tileset_beach.get(7,4);
+                var water_bottom_corner = tileset_beach.get(7,5);
+                var water_closed = tileset_beach.get(7,1);
 
-                for(var i = 0; i < height_map.length;i++){
-                    for(var j = 0; j < height_map[i].length;j++){
-                        var portion = height_map[i][j];
-                        switch(portion.type){
-                            case WATER_1:
-                            case WATER_2:
-                            case WATER_3:
-                            case WATER_4:
-                                context.fillStyle = WATER_1;
-                                map.setTile(i,j,water);
-                                break;
-                            case SAND:
-                                map.setTile(i,j,sand);
-                                break;
-                            case FOREST:
-                            case GRASS:
-                                map.setTile(i,j,grass);
-                                break;
-                            case MOUNTAIN:
-                            case SNOW:
-                                map.setTile(i,j,snow);
-                        }
+                var grass = tileset_beach.get(3,5);
+
+                for(var i = 0; i < height_map.height;i++){
+                    for(var j = 0; j < height_map.width;j++){
+                            var data = height_map.getData(i,j);
+                            var k = data.layer;
+                            var type = data.type;
+                            switch(type){
+                                case WATER_1:
+                                case WATER_2:
+                                case WATER_3:
+                                case WATER_4:
+                                    if(is_center(height_map,i,j)){
+                                        map.setTile(i,j,k,water_center);
+                                    }
+                                    else if(is_top_left(height_map,i,j)){
+                                        map.setTile(i,j,k,water_top_left);
+                                    }
+                                    else if(is_top_center(height_map,i,j)){
+                                        map.setTile(i,j,k,water_top_center)
+                                    }
+                                    else if(is_top_right(height_map,i,j)){
+                                        map.setTile(i,j,k,water_top_right);
+                                    }
+                                    else if(is_right(height_map,i,j)){
+                                        map.setTile(i,j,k,water_right);
+                                    }
+                                    else if(is_bottom_right(height_map,i,j)){
+                                        map.setTile(i,j,k,water_bottom_right);
+                                    }
+                                    else if(is_bottom_center(height_map,i,j)){
+                                        map.setTile(i,j,k,water_bottom_center);
+                                    }
+                                    else if(is_bottom_left(height_map,i,j)) {
+                                        map.setTile(i, j,k, water_bottom_left);
+                                    }
+                                    else if(is_left(height_map,i,j)){
+                                        map.setTile(i, j,k, water_left);
+                                    }
+                                    else if(is_open_top(height_map,i,j)){
+                                        map.setTile(i, j,k, water_open_top);
+                                    }
+                                    else if(is_open_bottom(height_map,i,j)){
+                                        map.setTile(i, j,k, water_open_bottom);
+                                    }
+                                    else if(is_open_left(height_map,i,j)){
+                                        map.setTile(i, j,k, water_open_left);
+                                    }
+                                    else if(is_open_right(height_map,i,j)){
+                                        map.setTile(i, j,k, water_open_right);
+                                    }
+                                    else if(is_closed(height_map,i,j)){
+                                        map.setTile(i, j,k, water_closed);
+                                    }
+                                    else if(is_open_vertical(height_map,i,j)){
+                                        map.setTile(i, j,k, water_open_vertical);
+                                    }
+                                    else if(is_open_horizontal(height_map,i,j)){
+                                        map.setTile(i, j,k,  water_open_horizontal);
+                                    }
+                                    else if(is_top_right_corner(height_map,i,j)){
+                                        map.setTile(i, j, k, water_top_right_corner);
+                                    }
+                                    else if(is_bottom_right_corner(height_map,i,j)){
+                                        map.setTile(i, j, k, water_bottom_right_corner);
+                                    }
+                                    else if(is_bottom_left_corner(height_map,i,j)){
+                                        map.setTile(i, j, k, water_bottom_left_corner);
+                                    }
+                                    else if(is_top_left_corner(height_map,i,j)) {
+                                        map.setTile(i, j, k, water_top_left_corner);
+                                    }
+                                    else if(is_top_corner(height_map,i,j)){
+                                        map.setTile(i, j, k, water_top_corner);
+                                    }
+                                    else if(is_bottom_corner(height_map,i,j)){
+                                        map.setTile(i, j, k, water_bottom_corner);
+                                    }
+
+
+                                    break;
+                                case SAND:
+                                    map.setTile(i,j,k,sand_fill);
+                                    break;
+                                case FOREST:
+                                case GRASS:
+                                    map.setTile(i,j,k,grass);
+                                    break;
+                                case MOUNTAIN:
+                                case SNOW:
+                                   // map.setTile(i,j,k,snow);
+                            }
                     }
                 }
+
+                console.log(height_map.map);
                 RPGCanvas.drawMap(map,engine);
             });
         }
